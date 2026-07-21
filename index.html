@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PocketPals 🌸 Cozy Student Budget & Savings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #FFFDF9; /* Soft cream background */
+        }
+        h1, h2, h3, .font-cute {
+            font-family: 'Fredoka', sans-serif;
+        }
+    </style>
+</head>
+<body class="text-gray-700 min-h-screen pb-12">
+
+    <header class="max-w-4xl mx-auto pt-8 px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="flex items-center space-x-2">
+            <span class="text-3xl">🌸</span>
+            <h1 class="text-2xl font-bold text-pink-400 tracking-wide">PocketPals</h1>
+        </div>
+        <div class="flex flex-col items-center sm:items-end bg-white border-2 border-pink-50 px-4 py-2 rounded-2xl shadow-sm">
+            <div id="liveClock" class="font-cute font-bold text-gray-700 text-sm tracking-wide">✨ loading time...</div>
+            <div id="liveDate" class="text-[11px] text-gray-400 font-medium mt-0.5">loading date...</div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <div class="md:col-span-1 space-y-6">
+            
+            <div class="bg-gradient-to-br from-purple-50 to-pink-50 p-5 rounded-3xl border-2 border-purple-100 shadow-sm relative overflow-hidden">
+                <div class="absolute -bottom-6 -right-6 text-5xl opacity-20">📚</div>
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-xs font-bold text-purple-500 uppercase tracking-wider flex items-center gap-1">
+                        <span>💡</span> Student Daily Reminder
+                    </h3>
+                    <button onclick="loadDailyReminder()" class="text-[10px] text-purple-400 hover:text-purple-600 font-bold transition-all">
+                        🔄 New Tip
+                    </button>
+                </div>
+                <p id="studentReminder" class="text-xs text-gray-600 leading-relaxed font-medium italic">
+                    "Track your small expenses today so your big dreams can happen tomorrow! You've got this, future CEO! ✨"
+                </p>
+                <div class="mt-3 flex gap-1">
+                    <span class="text-[10px] bg-purple-200/50 text-purple-700 font-bold px-2 py-0.5 rounded-full">ABM Mindset</span>
+                    <span class="text-[10px] bg-pink-200/50 text-pink-700 font-bold px-2 py-0.5 rounded-full">Daily Tip</span>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl border-2 border-amber-100 shadow-sm relative overflow-hidden bg-amber-50/10">
+                <h3 class="text-xs font-bold text-amber-500 uppercase tracking-wider mb-2 flex items-center gap-1">
+                    <span>⏰</span> Today's Target Limit
+                </h3>
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-2xl font-cute text-amber-400">₱</span>
+                    <input type="number" id="dailyLimitInput" onchange="changeDailyLimit()" placeholder="0.00" class="w-full text-2xl font-cute font-bold text-gray-800 bg-transparent border-b-2 border-dashed border-amber-200 focus:outline-none focus:border-amber-400">
+                </div>
+                <div class="text-xs text-gray-400">
+                    Remaining today: <span class="font-bold text-amber-600">₱<span id="dailyRemainingDisplay">0.00</span></span>
+                </div>
+                <button onclick="rollLeftoversToSavings()" class="mt-4 w-full bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold py-2 rounded-xl text-xs transition-all border border-amber-200">
+                    🌙 End Day & Save Leftovers
+                </button>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl border-2 border-purple-100 shadow-sm relative overflow-hidden">
+                <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-1">Total Money Saved 🎉</h3>
+                <div class="flex items-baseline space-x-1">
+                    <span class="text-2xl font-cute text-purple-400">₱</span>
+                    <span id="savingsDisplay" class="text-4xl font-cute text-gray-800">0.00</span>
+                </div>
+                <p class="text-xs text-purple-400 mt-2">Safe inside your piggy jar!</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl border-2 border-emerald-100 shadow-sm relative overflow-hidden">
+                <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-1">Overall General Wallet</h3>
+                <div class="flex items-baseline space-x-1">
+                    <span class="text-2xl font-cute text-emerald-400">₱</span>
+                    <span id="balanceDisplay" class="text-4xl font-cute text-gray-800">0.00</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="md:col-span-2 space-y-6">
+            <div class="bg-white p-6 rounded-3xl border-2 border-orange-100 shadow-sm">
+                <h2 class="text-xl font-cute text-orange-400 mb-4 flex items-center gap-2">
+                    <span>📝</span> Log a Transaction
+                </h2>
+                <form id="trackerForm" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                        <div class="md:col-span-1">
+                            <label class="block text-xs font-bold text-gray-400 mb-1">Amount (₱)</label>
+                            <div class="flex gap-1">
+                                <input type="number" id="amount" required step="1" value="0" placeholder="0" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:border-orange-300 bg-orange-50/20 text-center font-bold">
+                                <button type="button" onclick="plusTenPesos()" class="bg-orange-100 hover:bg-orange-200 text-orange-600 font-bold px-3 py-2 rounded-xl transition-all active:scale-95 text-xs whitespace-nowrap border border-orange-200">
+                                    + ₱10 🌸
+                                </button>
+                            </div>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-gray-400 mb-1">Type</label>
+                            <select id="type" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:border-orange-300 bg-orange-50/20">
+                                <option value="expense">💸 Expense (Deducts from Limit)</option>
+                                <option value="income">☀️ Load Wallet / Pocket Money</option>
+                                <option value="savings">⭐ Pure Direct Savings Input</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-1">Cute Note / Description</label>
+                        <input type="text" id="note" required placeholder="e.g., Jeeps / Snacks / Saved extra change ☕" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:border-orange-300 bg-orange-50/20">
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-1.5">✨ Quick Preset Student Tags</label>
+                        <div class="flex flex-wrap gap-1.5 p-2 bg-gray-50 rounded-2xl border border-gray-100">
+                            <button type="button" onclick="selectTag('🍔 Food')" class="bg-white border border-gray-200 hover:border-orange-300 text-gray-600 px-3 py-1 rounded-xl text-xs transition-all active:scale-95 cursor-pointer">🍔 Food</button>
+                            <button type="button" onclick="selectTag('🚌 Transportation')" class="bg-white border border-gray-200 hover:border-orange-300 text-gray-600 px-3 py-1 rounded-xl text-xs transition-all active:scale-95 cursor-pointer">🚌 Transportation</button>
+                            <button type="button" onclick="selectTag('🧋 Drink')" class="bg-white border border-gray-200 hover:border-orange-300 text-gray-600 px-3 py-1 rounded-xl text-xs transition-all active:scale-95 cursor-pointer">🧋 Drink</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-orange-300 hover:bg-orange-400 text-white font-bold py-3 rounded-xl shadow-sm transition-all">
+                        Add to my Ledger ✨
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl border-2 border-blue-100 shadow-sm">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-cute text-blue-400 flex items-center gap-2">
+                        <span>📅</span> Budget Timeline & Records
+                    </h2>
+                    <button onclick="clearAllData()" class="text-xs text-red-300 hover:text-red-500 underline transition-all">
+                        Clear everything
+                    </button>
+                </div>
+                <div id="historyList" class="space-y-6 max-h-96 overflow-y-auto pr-2">
+                    </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Updated Storage Key to prevent cache conflicts
+        let appData = JSON.parse(localStorage.getItem('pocketPalsData_v3')) || {
+            dailyLimit: 0,
+            history: []
+        };
+
+        const dailyLimitInput = document.getElementById('dailyLimitInput');
+        const dailyRemainingDisplay = document.getElementById('dailyRemainingDisplay');
+        const savingsDisplay = document.getElementById('savingsDisplay');
+        const balanceDisplay = document.getElementById('balanceDisplay');
+        const historyList = document.getElementById('historyList');
+        const trackerForm = document.getElementById('trackerForm');
+        const amountInput = document.getElementById('amount');
+        const noteInput = document.getElementById('note');
+
+        // Expanded, dynamic collection of reminders
+        const studentTips = [
+            "Track your small expenses today so your big dreams can happen tomorrow! You've got this, future CEO! ✨",
+            "ABM Reminder: Balance your ledger, protect your assets, and treat your personal savings like a long-term investment! 📊",
+            "Did you buy snacks or commuter tickets today? Don't forget to tap '+ ₱10' and type a quick memo! 🥪",
+            "Mistakes are just operational costs of learning. Look back, fix the math, and keep growing! ✏️",
+            "Be patient with your growth. Even beautiful transformations take time and steady tracking. 🌸",
+            "Small savings add up fast. Put down that extra impulsive purchase today and add it to your Piggy Jar! 🐷",
+            "A smart entrepreneur always knows where their capital goes. Good job staying on top of your numbers today! 🚀",
+            "Stay focused, drink your water, and remember to log your transport fare before you forget! 🚌"
+        ];
+
+        // Custom selector function to copy context tags cleanly
+        function selectTag(tagName) {
+            noteInput.value = tagName;
+        }
+
+        // Set live system time and date tracker
+        function updateClock() {
+            const now = new Date();
+            
+            // Format Time
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            let ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; 
+            minutes = minutes < 10 ? '0'+minutes : minutes;
+            document.getElementById('liveClock').innerText = `⏰ ${hours}:${minutes} ${ampm}`;
+
+            // Format Date
+            const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+            document.getElementById('liveDate').innerText = now.toLocaleDateString('en-US', options);
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // UPDATED: Selects a completely random reminder card on every load or manual tap
+        function loadDailyReminder() {
+            const randomIndex = Math.floor(Math.random() * studentTips.length);
+            document.getElementById('studentReminder').innerText = `"${studentTips[randomIndex]}"`;
+        }
+        loadDailyReminder();
+
+        function plusTenPesos() {
+            let currentVal = parseFloat(amountInput.value) || 0;
+            amountInput.value = currentVal + 10;
+        }
+
+        function changeDailyLimit() {
+            appData.dailyLimit = parseFloat(dailyLimitInput.value) || 0;
+            recalculateBalances();
+        }
+
+        function rollLeftoversToSavings() {
+            const remaining = calculateTodayRemaining();
+            if (remaining <= 0) {
+                alert("No extra leftover amount to save today! Keep up the good work! 💕");
+                return;
+            }
+            if (confirm(`Move your leftover ₱${remaining.toFixed(2)} straight to savings?`)) {
+                const todayStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const timeStr = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                
+                appData.history.unshift({
+                    amount: remaining,
+                    type: 'savings',
+                    note: '🌙 Leftover Limit Auto-Saved!',
+                    date: todayStr,
+                    time: timeStr,
+                    id: Date.now()
+                });
+
+                appData.dailyLimit = 0;
+                dailyLimitInput.value = 0;
+                recalculateBalances();
+            }
+        }
+
+        function calculateTodayRemaining() {
+            const todayStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            let spentToday = 0;
+            appData.history.forEach(item => {
+                if (item.date === todayStr && item.type === 'expense') {
+                    spentToday += item.amount;
+                }
+            });
+            return Math.max(0, appData.dailyLimit - spentToday);
+        }
+
+        function recalculateBalances() {
+            let totalWallet = 0;
+            let totalSaved = 0;
+
+            appData.history.forEach(item => {
+                if (item.type === 'income') totalWallet += item.amount;
+                if (item.type === 'expense') totalWallet -= item.amount;
+                if (item.type === 'savings') {
+                    totalSaved += item.amount;
+                    totalWallet -= item.amount; 
+                }
+            });
+
+            savingsDisplay.innerText = totalSaved.toFixed(2);
+            balanceDisplay.innerText = totalWallet.toFixed(2);
+            dailyLimitInput.value = appData.dailyLimit || "";
+            dailyRemainingDisplay.innerText = calculateTodayRemaining().toFixed(2);
+
+            localStorage.setItem('pocketPalsData_v3', JSON.stringify(appData));
+            renderHistory();
+        }
+
+        trackerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const amount = parseFloat(amountInput.value);
+            const type = document.getElementById('type').value;
+            const note = noteInput.value;
+            
+            const todayStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const timeStr = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+            if (amount <= 0) {
+                alert("Please add an amount higher than ₱0! 💕");
+                return;
+            }
+
+            appData.history.unshift({ amount, type, note, date: todayStr, time: timeStr, id: Date.now() });
+            trackerForm.reset();
+            amountInput.value = 0; 
+            recalculateBalances();
+        });
+
+        function renderHistory() {
+            historyList.innerHTML = '';
+            if (appData.history.length === 0) {
+                historyList.innerHTML = `<p class="text-gray-300 text-center text-sm py-4">No entries yet! Start tracking above 🌸</p>`;
+                return;
+            }
+
+            const groups = {};
+            appData.history.forEach(item => {
+                if (!groups[item.date]) {
+                    groups[item.date] = [];
+                }
+                groups[item.date].push(item);
+            });
+
+            Object.keys(groups).forEach(date => {
+                let daySectionHtml = `
+                    <div class="border-l-4 border-blue-200 pl-3 space-y-2 mb-4">
+                        <h3 class="text-xs font-bold text-blue-400 bg-blue-50/50 px-2 py-1 rounded-md inline-block tracking-wide mb-1">✨ Records for ${date}</h3>
+                `;
+
+                groups[date].forEach(item => {
+                    let badgeColor = '';
+                    let sign = '';
+                    
+                    if (item.type === 'expense') {
+                        badgeColor = 'bg-red-50 text-red-500 border-red-100';
+                        sign = '-';
+                    } else if (item.type === 'savings') {
+                        badgeColor = 'bg-purple-50 text-purple-500 border-purple-100';
+                        sign = '⭐';
+                    } else if (item.type === 'income') {
+                        badgeColor = 'bg-emerald-50 text-emerald-600 border-emerald-100';
+                        sign = '+';
+                    }
+
+                    const itemTime = item.time ? `<span class="text-[9px] text-gray-400 ml-1">(${item.time})</span>` : '';
+
+                    daySectionHtml += `
+                        <div class="flex justify-between items-center p-2.5 rounded-xl border ${badgeColor} text-xs transition-all hover:translate-x-0.5">
+                            <div class="flex flex-col">
+                                <span class="font-medium text-gray-700">${item.note} ${itemTime}</span>
+                            </div>
+                            <span class="font-cute font-bold">${sign} ₱${item.amount.toFixed(2)}</span>
+                        </div>`;
+                });
+
+                daySectionHtml += `</div>`;
+                historyList.innerHTML += daySectionHtml;
+            });
+        }
+
+        function clearAllData() {
+            if(confirm("Are you sure you want to reset everything?")) {
+                appData = { dailyLimit: 0, history: [] };
+                dailyLimitInput.value = "";
+                recalculateBalances();
+            }
+        }
+
+        recalculateBalances();
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PocketPals 🌸 Cozy Student Budget & Savings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
